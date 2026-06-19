@@ -3,9 +3,9 @@
 		"module": "nodenext",
 		"esModuleInterop": true,
 		"outDir": "../out/",
-		"target": "es2020",
+		"target": "esnext",
 		"lib": [
-			"es2020"
+			"ESNext"
 		],
 		"sourceMap": true,
 		"strict": true,   /* enable all strict type-checking options */
@@ -14,7 +14,8 @@
 		// "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
 		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
 
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"types": ["node"]
 	},
 	"exclude": [
 		"node_modules",

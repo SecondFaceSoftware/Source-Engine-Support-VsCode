@@ -1,4 +1,4 @@
-import { PerformanceObserver } from "perf_hooks";
+import { PerformanceObserver } from "node:perf_hooks";
 import { ExtensionContext } from "vscode";
 import * as main from "./main";
 
