@@ -11,9 +11,3 @@ out
 
 # Typescript build garbage
 tsconfig.tsbuildinfo
-
-# Jest coverage results
-coverage
-
-# Jest-bench results
-benchmarks
