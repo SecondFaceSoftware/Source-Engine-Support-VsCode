@@ -9,6 +9,7 @@ import * as modelCompile from "./compiler/model-compile";
 import * as performance from "./performance";
 import * as kvDetect from "./KvFileDetection";
 import * as kvFileMemory from "./KvFileMemory";
+import * as vmtAutoCreate from "./VmtAutoCreate";
 
 import * as packageJson from "../package.json";
 
@@ -37,6 +38,8 @@ export function activate(context: vscode.ExtensionContext): void {
     
     captionsCompile.init(context);
     modelCompile.init(context);
+
+    vmtAutoCreate.init(context);
     
     output.appendLine(`Started Source Engine Support v${packageJson.version}`);
 

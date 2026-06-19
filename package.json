@@ -313,6 +313,12 @@
                     "light": "./icons/forget-kv-light.png",
                     "dark": "./icons/forget-kv-dark.png"
                 }
+            },
+            {
+                "command": "vmt.autoCreate",
+                "title": "Auto create material",
+                "shortTitle": "Create VMT",
+                "category": "Material"
             }
         ],
         "menus": {
@@ -336,6 +342,13 @@
                     "when": "sourceEngine.showKvRemember && resourceScheme == 'file'",
                     "command": "kv.remember",
                     "group": "navigation"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "group": "7_modification",
+                    "command": "vmt.autoCreate",
+                    "when": "resourceExtname == .vtf"
                 }
             ]
         },
