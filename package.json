@@ -439,10 +439,7 @@
         "typescript": "^6.0.3"
     },
     "dependencies": {
-        "@sourcelib/captions": "^0.1.1",
-        "@sourcelib/fs": "^0.1.1",
-        "@sourcelib/kv": "^0.9.1",
-        "@sourcelib/vmt": "^0.4.0",
-        "list-files-in-dir": "^0.1.5"
+        "list-files-in-dir": "^0.1.5",
+        "sourcelib": "^0.1.1"
     }
 }

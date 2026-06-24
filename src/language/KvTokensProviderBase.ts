@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
+import * as sourcelib from "sourcelib";
 import { KvPiece } from "../Kv";
-import { isQuoted, stripQuotes, Token, TokenList, TokenType } from "@sourcelib/kv";
 import KvDocument from "./KvDocument";
 import { KvSemanticProcessor, KvSemanticProcessorParams } from "./KvSemanticProcessor";
 
@@ -18,14 +18,14 @@ export abstract class KvTokensProviderBase implements vscode.DocumentSemanticTok
     diagnostics: vscode.Diagnostic[] = [];
     bracketStack = 0;
 
-    protected tokens: TokenList;
+    protected tokens: sourcelib.kv.TokenList;
 
     protected abstract valueProcessors: KvSemanticProcessor[];
 
     protected abstract keyProcessors: KvSemanticProcessor[];
 
     constructor(legend: vscode.SemanticTokensLegend, diagnosticCollection: vscode.DiagnosticCollection) {
-        this.tokens = new TokenList;
+        this.tokens = new sourcelib.kv.TokenList;
         this.legend = legend;
         this.diagnosticCollection = diagnosticCollection;
     }
@@ -51,21 +51,21 @@ export abstract class KvTokensProviderBase implements vscode.DocumentSemanticTok
             const tokenRange = kvDoc.getTokenRange(token);
 
             // No further processing on comments
-            if (token.type === TokenType.Comment) {
+            if (token.type === sourcelib.kv.TokenType.Comment) {
                 tokensBuilder.push(tokenRange, "comment", []);
                 continue;
             }
 
-            if (token.type === TokenType.Key) {
+            if (token.type === sourcelib.kv.TokenType.Key) {
 
                 // Get next token that isn't a comment 
                 const interestingToken = this.getNextInterestingToken(kvDoc.tokens, i);
                 
                 // We're an object key
-                if (interestingToken?.token.type === TokenType.ObjectStart) {
+                if (interestingToken?.token.type === sourcelib.kv.TokenType.ObjectStart) {
                     tokensBuilder.push(tokenRange, "struct", []);
                     this.bracketStack++;
-                    currentScope += "." + stripQuotes(token.value.toLowerCase());
+                    currentScope += "." + sourcelib.kv.stripQuotes(token.value.toLowerCase());
                     continue;
                 }
 
@@ -73,28 +73,28 @@ export abstract class KvTokensProviderBase implements vscode.DocumentSemanticTok
                 
                 // Is this key not followed by a value?
                 const interestingTokenType = interestingToken?.token.type;
-                if (interestingTokenType !== TokenType.Value && interestingTokenType !== TokenType.Conditional) {
+                if (interestingTokenType !== sourcelib.kv.TokenType.Value && interestingTokenType !== sourcelib.kv.TokenType.Conditional) {
                     this.diagnostics.push(new vscode.Diagnostic(tokenRange, "Expecting value to this key", vscode.DiagnosticSeverity.Error));
                 }
                 continue;
             }
 
-            if (token.type === TokenType.Value) {
+            if (token.type === sourcelib.kv.TokenType.Value) {
                 this.processKvValue(token, tokenRange, tokensBuilder, kvDoc, currentScope);
                 continue;
             }            
 
-            if (token.type === TokenType.ObjectEnd) {
+            if (token.type === sourcelib.kv.TokenType.ObjectEnd) {
                 this.bracketStack--;
                 currentScope = currentScope.substring(0, currentScope.lastIndexOf("."));
                 continue;
             }
 
-            if (token.type === TokenType.PreprocessorKey) {
+            if (token.type === sourcelib.kv.TokenType.PreprocessorKey) {
 
                 // Get next token that isn't a comment 
                 const interestingToken = this.getNextInterestingToken(kvDoc.tokens, i);
-                if (interestingToken?.token.type === TokenType.Value) {
+                if (interestingToken?.token.type === sourcelib.kv.TokenType.Value) {
                     
                     const nextTokenRange = kvDoc.getTokenRange(token);
 
@@ -108,7 +108,7 @@ export abstract class KvTokensProviderBase implements vscode.DocumentSemanticTok
                 continue;
             }
 
-            if(token.type === TokenType.Conditional) {
+            if(token.type === sourcelib.kv.TokenType.Conditional) {
                 tokensBuilder.push(tokenRange, "keyword", []);
             }
         }
@@ -123,13 +123,13 @@ export abstract class KvTokensProviderBase implements vscode.DocumentSemanticTok
         return tokensBuilder.build();
     }
 
-    getNextInterestingToken(tokens: TokenList, i: number): { token: Token; offset: number; } | null {
+    getNextInterestingToken(tokens: sourcelib.kv.TokenList, i: number): { token: sourcelib.kv.Token; offset: number; } | null {
         let n = 1;
         if(tokens.length - 1 < i + n) {
             return null;
         }
         let nextToken = tokens[i + n];
-        while (nextToken.type === TokenType.Comment) {
+        while (nextToken.type === sourcelib.kv.TokenType.Comment) {
             nextToken = tokens[i + n++];
             if (nextToken == null)
                 break;
@@ -138,18 +138,18 @@ export abstract class KvTokensProviderBase implements vscode.DocumentSemanticTok
         return { token: nextToken, offset: n };
     }
 
-    protected processKvKey(token: Token, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDocument: KvDocument, scope: string): void {
+    protected processKvKey(token: sourcelib.kv.Token, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDocument: KvDocument, scope: string): void {
         const processed = this.processString(token, range, tokensBuilder, this.keyProcessors, kvDocument, scope);
         if (!processed)
             tokensBuilder.push(range, "variable", ["declaration"]);
     }
-    protected processKvValue(token: Token, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDocument: KvDocument, scope: string): void {
+    protected processKvValue(token: sourcelib.kv.Token, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDocument: KvDocument, scope: string): void {
         const processed = this.processString(token, range, tokensBuilder, this.valueProcessors, kvDocument, scope);
         if (!processed)
             tokensBuilder.push(range, "string", []);
     }
 
-    processString(token: Token, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, processors: KvSemanticProcessor[], kvDocument: KvDocument, scope: string): boolean {
+    processString(token: sourcelib.kv.Token, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, processors: KvSemanticProcessor[], kvDocument: KvDocument, scope: string): boolean {
         const unquoted = KvTokensProviderBase.unquoteToken(token, range);
 
         const processed = processors.some(processor => {
@@ -170,15 +170,15 @@ export abstract class KvTokensProviderBase implements vscode.DocumentSemanticTok
         return processed;
     }
 
-    protected disallowDuplicate(scopedKey: string, depth: number, token: Token): boolean {
+    protected disallowDuplicate(scopedKey: string, depth: number, token: sourcelib.kv.Token): boolean {
         return false; // Duplicate keys are allowed by default.
     }
 
-    public static unquoteToken(token: Token, range: vscode.Range): KvPiece {
+    public static unquoteToken(token: sourcelib.kv.Token, range: vscode.Range): KvPiece {
         // Quote tokens
         let unquotedContent: string = token.value;
         let unquotedRange: vscode.Range = range;
-        if (isQuoted(token.value)) {
+        if (sourcelib.kv.isQuoted(token.value)) {
             unquotedContent = token.value.substring(1, token.value.length - 1);
             unquotedRange = new vscode.Range(range.start.translate(0, 1), range.end.translate(0, -1));
         }

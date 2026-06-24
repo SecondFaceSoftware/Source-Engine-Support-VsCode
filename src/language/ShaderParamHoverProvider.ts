@@ -1,6 +1,6 @@
 import vscode from "vscode";
 import KvDocument from "./KvDocument";
-import { shaderParams } from "@sourcelib/vmt";
+import * as sourcelib from "sourcelib";
 
 
 export class ShaderParamHoverProvider implements vscode.HoverProvider {
@@ -15,7 +15,7 @@ export class ShaderParamHoverProvider implements vscode.HoverProvider {
         if (kv == null)
             return null;
 
-        const param = shaderParams.find(p => p.name == kv.key.content);
+        const param = sourcelib.vmt.shaderParams.find(p => p.name == kv.key.content);
         if (param == null)
             return null;
         const name = param.name;

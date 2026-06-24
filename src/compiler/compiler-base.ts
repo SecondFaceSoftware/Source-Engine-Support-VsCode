@@ -1,5 +1,5 @@
 import vscode from "vscode";
-import { isWhitespace } from "@sourcelib/kv/";
+import * as sourcelib from "sourcelib";
 import * as main from "../main";
 import * as fs from "fs";
 import { execFile } from "child_process";
@@ -33,7 +33,7 @@ export async function compileSomething(settings: CompileSettings): Promise<void>
         filePath = filePath.toLowerCase();
         workDir = workDir.toLowerCase();
     }
-    if( exePath == null || isWhitespace(exePath) ) {
+    if( exePath == null || sourcelib.kv.isWhitespace(exePath) ) {
         vscode.window.showErrorMessage(`${settings.compilerName} path is empty. Please configure!`);
         return;
     }

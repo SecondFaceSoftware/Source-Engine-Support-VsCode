@@ -1,17 +1,11 @@
-// ==========================================================================
-// Purpose:
-// Implementations of language utility providers for the keyvalues language.
-//
 // This is NOT a base for other formats!
-// ==========================================================================
 
 import * as shared from "./Shared";
 import * as vscode from "vscode";
 import { KvTokensProviderBase } from "./KvTokensProviderBase";
-//import { KvDocumentFormatter } from "./KvFormatter";
 import { KvSemanticProcessor, KvSemanticProcessorParams } from "./KvSemanticProcessor";
 import KvDocument from "./KvDocument";
-import { matrixRegExp } from "@sourcelib/vmt";
+import * as sourcelib from "sourcelib";
 
 export const selectorAll: ReadonlyArray<vscode.DocumentFilter> = [ shared.filterKvSaved, 
     shared.filterKvUnsaved, 
@@ -32,7 +26,7 @@ export class KeyvalueSemanticTokensProvider extends KvTokensProviderBase {
     protected valueProcessors: KvSemanticProcessor[] =
         [
             { regex: /^-?\d+(\.\d+)?$/, processor: this.processValueNumber },
-            { regex: matrixRegExp, processor: this.processValueArray }
+            { regex: sourcelib.kv.matrixRegExp, processor: this.processValueArray }
         ];
 
     constructor() {

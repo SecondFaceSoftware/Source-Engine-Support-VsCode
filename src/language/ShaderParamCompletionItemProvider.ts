@@ -1,9 +1,7 @@
 import vscode from "vscode";
+import * as sourcelib from "sourcelib";
 import KvDocument from "./KvDocument";
-import { shaderParams, internalTextures } from "@sourcelib/vmt";
 import { KvPair } from "../Kv";
-import { ShaderParam } from "@sourcelib/vmt";
-import { getParentDocumentDirectory } from "@sourcelib/fs";
 import { listFilesSync } from "list-files-in-dir";
 import fs from "fs";
 import path from "path";
@@ -23,7 +21,7 @@ export class ShaderParamCompletionItemProvider implements vscode.CompletionItemP
 
         // FIXME: Eww!
         if (kv.key.range.contains(position)) {
-            const suggestions = shaderParams.filter(p => p.name.includes(kv.key.content));
+            const suggestions = sourcelib.vmt.shaderParams.filter(p => p.name.includes(kv.key.content));
             const completions = suggestions.map(s => {
                 const completion = new vscode.CompletionItem(s.name);
                 completion.insertText = s.name.substring(1);
@@ -49,7 +47,7 @@ export class ShaderParamCompletionItemProvider implements vscode.CompletionItemP
 
 
         if (kv.value.range.contains(position)) {
-            const param = shaderParams.find(p => p.name == kv.key.content);
+            const param = sourcelib.vmt.shaderParams.find(p => p.name == kv.key.content);
 
             const completions = new vscode.CompletionList();
 
@@ -82,14 +80,14 @@ export class ShaderParamCompletionItemProvider implements vscode.CompletionItemP
         if (param.type !== "texture" && document.uri.scheme !== "file")
             return;
 
-        internalTextures.forEach(rt => {
+        sourcelib.vmt.internalTextures.forEach(rt => {
             const completion = new vscode.CompletionItem(rt);
             completion.detail = "Internal engine texture";
             completion.kind = vscode.CompletionItemKind.Keyword;
             completions.items.push(completion);
         });
 
-        const materialRoot = getParentDocumentDirectory(document.uri.fsPath, "materials");
+        const materialRoot = sourcelib.fs.getParentDocumentDirectory(document.uri.fsPath, "materials");
         if (materialRoot == null)
             return;
 

@@ -1,10 +1,7 @@
 import vscode from "vscode";
+import * as sourcelib from "sourcelib";
 import KvDocument from "./KvDocument";
 import { KvTokensProviderBase } from "./KvTokensProviderBase";
-import { getColorMatches, ColorMatchParenthesisType, getMatrixMatches } from "@sourcelib/vmt";
-import { getParentDocumentDirectory } from "@sourcelib/fs";
-import { Token, isFloatValue, isScalarValue } from "@sourcelib/kv";
-import { shaderParams, internalTextures } from "@sourcelib/vmt";
 import { KvSemanticProcessor, KvSemanticProcessorParams } from "./KvSemanticProcessor";
 import { KvPair } from "../Kv";
 import * as main from "../main";
@@ -47,7 +44,7 @@ export class VmtSemanticTokenProvider extends KvTokensProviderBase {
         const kv = params.kvDocument.getKeyValueAt(params.kvPiece.range.start.line);
         if (kv == null)
             return false;
-        const param = shaderParams.find(p => p.name === kv.key.content);
+        const param = sourcelib.vmt.shaderParams.find(p => p.name === kv.key.content);
         if (param == null) {
             this.processValueString(kv, params.wholeRange, params.tokensBuilder, params.kvDocument);
             return false;
@@ -89,7 +86,7 @@ export class VmtSemanticTokenProvider extends KvTokensProviderBase {
     }
 
     processValueFloat(kv: KvPair, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDoc: KvDocument): void {
-        if (isFloatValue(kv.value.content)) {
+        if (sourcelib.kv.isFloatValue(kv.value.content)) {
             tokensBuilder.push(range, "number");
         } else {
             this.diagnostics.push(new vscode.Diagnostic(range, "Unexpected shader parameter value type. Expecting a float.", vscode.DiagnosticSeverity.Warning));
@@ -97,7 +94,7 @@ export class VmtSemanticTokenProvider extends KvTokensProviderBase {
     }
 
     processValueScalar(kv: KvPair, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDoc: KvDocument): void {
-        if (isScalarValue(kv.value.content)) {
+        if (sourcelib.kv.isScalarValue(kv.value.content)) {
             tokensBuilder.push(range, "number");
         } else {
             this.diagnostics.push(new vscode.Diagnostic(range, "Unexpected shader parameter value type. Expecting a scalar. (0-1)", vscode.DiagnosticSeverity.Warning));
@@ -110,13 +107,13 @@ export class VmtSemanticTokenProvider extends KvTokensProviderBase {
 
     processValueTexture(kv: KvPair, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDoc: KvDocument): void {
 
-        if (internalTextures.includes(kv.value.content)) {
+        if (sourcelib.vmt.internalTextures.includes(kv.value.content)) {
             tokensBuilder.push(range, "keyword");
             return;
         }
         const validationEnabled = main.config.get<boolean>("vmt.validateTexturePaths");
         if(validationEnabled) {
-            const materialDir = getParentDocumentDirectory(kvDoc.document.uri.fsPath, "materials");
+            const materialDir = sourcelib.fs.getParentDocumentDirectory(kvDoc.document.uri.fsPath, "materials");
             if (materialDir != null) {
                 const materialPath: string = path.join(materialDir, kv.value.content + ".vtf");
                 if (!fs.existsSync(materialPath)) {
@@ -131,7 +128,7 @@ export class VmtSemanticTokenProvider extends KvTokensProviderBase {
     processValueMatrix(kv: KvPair, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDoc: KvDocument): void {
 
         // Don't put any semantic tokens here. The textmate highlighting is good enough. We only validate the input and provide warning messages
-        const matrixMatches = getMatrixMatches(kv.value.content);
+        const matrixMatches = sourcelib.kv.getMatrixMatches(kv.value.content);
         if (!matrixMatches.validFormat) {
             this.diagnostics.push(new vscode.Diagnostic(range, "Invalid matrix format.", vscode.DiagnosticSeverity.Warning));
         }
@@ -140,15 +137,15 @@ export class VmtSemanticTokenProvider extends KvTokensProviderBase {
     processValueColor(kv: KvPair, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDoc: KvDocument): void {
 
         // Don't put any semantic tokens here. The textmate highlighting is good enough. We only validate the input and provide warning messages
-        const colorMatches = getColorMatches(kv.value.content);
+        const colorMatches = sourcelib.vmt.getColorMatches(kv.value.content);
         if (!colorMatches.validFormat) {
             this.diagnostics.push(new vscode.Diagnostic(range, "Invalid color value. Format: [0 0.25 1] or {0 200 49}", vscode.DiagnosticSeverity.Warning));
             return;
         }
         if (colorMatches.valuesOutOfBounds) {
-            if (colorMatches.parenthesisType === ColorMatchParenthesisType.Brackets) {
+            if (colorMatches.parenthesisType === sourcelib.vmt.ColorMatchParenthesisType.Brackets) {
                 this.diagnostics.push(new vscode.Diagnostic(range, "Color values out of bounds. Must be between 0 and 1", vscode.DiagnosticSeverity.Warning));
-            } else if (colorMatches.parenthesisType === ColorMatchParenthesisType.Braces) {
+            } else if (colorMatches.parenthesisType === sourcelib.vmt.ColorMatchParenthesisType.Braces) {
                 this.diagnostics.push(new vscode.Diagnostic(range, "Color values out of bounds. Must be between 0 and 255", vscode.DiagnosticSeverity.Warning));
             }
         }
@@ -164,7 +161,7 @@ export class VmtSemanticTokenProvider extends KvTokensProviderBase {
 
     }
 
-    protected override disallowDuplicate(scopedKey: string, depth: number, token: Token): boolean {
+    protected override disallowDuplicate(scopedKey: string, depth: number, token: sourcelib.kv.Token): boolean {
         return depth === 1; // Disallow duplicates on shader parameters
     }
 }
