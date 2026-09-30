@@ -1,6 +1,6 @@
 {
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-	"name": "Valve Keyvalue 3",
+	"name": "Valve Keyvalue",
 	"scopeName": "source.kv",
 	"patterns": [
 		{

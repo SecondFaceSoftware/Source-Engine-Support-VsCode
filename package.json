@@ -102,6 +102,20 @@
                 ]
             },
             {
+                "id": "keyvalue2",
+                "configuration": "./lang-config-kv.json",
+                "aliases": [
+                    "Valve KeyValue 2",
+                    "keyvalue2",
+                    "KV2",
+                    "DMX"
+                ],
+                "firstLine": "<!-- dmx encoding keyvalues2.+-->",
+                "extensions": [
+                    ".dmx"
+                ]
+            },
+            {
                 "id": "vmt",
                 "configuration": "./lang-config-kv.json",
                 "aliases": [
@@ -221,6 +235,11 @@
                 "language": "keyvalue",
                 "scopeName": "source.kv",
                 "path": "./syntaxes/keyvalue.tmLanguage.json"
+            },
+            {
+                "language": "keyvalue2",
+                "scopeName": "source.kv2",
+                "path": "./syntaxes/keyvalue2.tmLanguage.json"
             },
             {
                 "language": "soundscript",

@@ -1,0 +1,44 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Valve Keyvalue 2",
+	"scopeName": "source.kv2",
+	"patterns": [
+		{
+			"include": "#header"
+		},
+		{
+			"include": "#comment"
+		},
+		{
+			"include": "#stringQuoted"
+		},
+		{
+			"include": "#stringUnquoted"
+		}
+	],
+	"repository": {
+		"header": {
+			"name": "namespace.keyvalue2",
+			"match": "<!--.+-->"
+		},
+		"comment": {
+			"name": "comment.line.keyvalue2",
+			"match": "//.*"
+		},
+		"stringUnquoted": {
+			"name": "string.unquoted.keyvalue2",
+			"match": "[\\w|\\*\\.\\\\/$%#-]+"
+		},
+		"stringQuoted": {
+			"name": "string.quoted.double.keyvalue2",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.keyvalue2",
+					"match": "\\\\\""
+				}
+			]
+		}
+	}
+}

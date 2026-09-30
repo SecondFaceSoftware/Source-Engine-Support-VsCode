@@ -1,0 +1,31 @@
+<!-- dmx encoding keyvalues2 1 format HAGame 1 -->
+// This file specifies the behaviours for each engine branch, so the compilers can do the right things.
+// See src/hammeraddons/config.py -> GamesConfig for what options are available.
+"Game"
+    {
+    "name" "string" "Portal Revolution 2"
+    "steamid" "int" "-1"
+    "aliases" "string_array"
+        [
+        "Revo2"
+        ]
+
+    "tags" "string_array" ["strata", "p2"]
+
+    "io_comma_sep" "bool" "0"
+    "instance_proxies" "bool" "1"
+    "translucent_needs_mostlyopaque" "bool" "0"
+    "vscript"      "bool" "1"
+    "vscript_quote"      "string" "\""
+    "particles_manifest" "string" "maps/<map name>_particles.txt"
+    "studiomdl_path_windows" "string" "bin/win64/studiomdl.exe"
+    "studiomdl_path_linux" "string" "bin/linux64/studiomdl"
+
+    "pack_vpk" "bool" "0"
+    "searchpaths" "element_array" [
+        "SearchFolder" {
+            "path" "string" "revolution/"
+            "pack" "bool" "0"
+        },
+    ]
+    }
