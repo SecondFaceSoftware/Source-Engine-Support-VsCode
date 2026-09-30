@@ -26,7 +26,7 @@ export class KeyvalueSemanticTokensProvider extends KvTokensProviderBase {
     protected valueProcessors: KvSemanticProcessor[] =
         [
             { regex: /^-?\d+(\.\d+)?$/, processor: this.processValueNumber },
-            { regex: sourcelib.kv.matrixRegExp, processor: this.processValueArray }
+            // { regex: sourcelib.vmt.VmtMatrix.matrixRegExp, processor: this.processValueArray }
         ];
 
     constructor() {

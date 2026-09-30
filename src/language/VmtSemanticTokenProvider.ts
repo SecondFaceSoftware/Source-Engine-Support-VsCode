@@ -86,7 +86,7 @@ export class VmtSemanticTokenProvider extends KvTokensProviderBase {
     }
 
     processValueFloat(kv: KvPair, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDoc: KvDocument): void {
-        if (sourcelib.kv.isFloatValue(kv.value.content)) {
+        if (sourcelib.kv.KvStringUtil.isFloatValue(kv.value.content)) {
             tokensBuilder.push(range, "number");
         } else {
             this.diagnostics.push(new vscode.Diagnostic(range, "Unexpected shader parameter value type. Expecting a float.", vscode.DiagnosticSeverity.Warning));
@@ -94,7 +94,7 @@ export class VmtSemanticTokenProvider extends KvTokensProviderBase {
     }
 
     processValueScalar(kv: KvPair, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDoc: KvDocument): void {
-        if (sourcelib.kv.isScalarValue(kv.value.content)) {
+        if (sourcelib.kv.KvStringUtil.isScalarValue(kv.value.content)) {
             tokensBuilder.push(range, "number");
         } else {
             this.diagnostics.push(new vscode.Diagnostic(range, "Unexpected shader parameter value type. Expecting a scalar. (0-1)", vscode.DiagnosticSeverity.Warning));
@@ -128,7 +128,7 @@ export class VmtSemanticTokenProvider extends KvTokensProviderBase {
     processValueMatrix(kv: KvPair, range: vscode.Range, tokensBuilder: vscode.SemanticTokensBuilder, kvDoc: KvDocument): void {
 
         // Don't put any semantic tokens here. The textmate highlighting is good enough. We only validate the input and provide warning messages
-        const matrixMatches = sourcelib.kv.getMatrixMatches(kv.value.content);
+        const matrixMatches = sourcelib.vmt.VmtMatrix.getMatrixMatches(kv.value.content);
         if (!matrixMatches.validFormat) {
             this.diagnostics.push(new vscode.Diagnostic(range, "Invalid matrix format.", vscode.DiagnosticSeverity.Warning));
         }
@@ -159,9 +159,5 @@ export class VmtSemanticTokenProvider extends KvTokensProviderBase {
             tokensBuilder.push(range, "string");
         }
 
-    }
-
-    protected override disallowDuplicate(scopedKey: string, depth: number, token: sourcelib.kv.Token): boolean {
-        return depth === 1; // Disallow duplicates on shader parameters
     }
 }

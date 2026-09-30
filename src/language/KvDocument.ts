@@ -6,18 +6,18 @@ import { KvTokensProviderBase } from "./KvTokensProviderBase";
 export default class KvDocument {
 
     protected _document: vscode.TextDocument;
-    protected _tokens: sourcelib.kv.TokenList;
+    protected _tokens: sourcelib.kv.KvTokenList;
 
     public get document(): vscode.TextDocument {
         return this._document;
     }
 
-    public get tokens(): sourcelib.kv.TokenList {
+    public get tokens(): sourcelib.kv.KvTokenList {
         return this._tokens;
     }
 
     public static from(document: vscode.TextDocument): KvDocument {
-        return new KvDocument(document, sourcelib.kv.tokenize(document.getText()));
+        return new KvDocument(document, sourcelib.kv.KvTokenizer.tokenize(document.getText()));
     }
 
     public static tokenLegend = new vscode.SemanticTokensLegend([
@@ -36,7 +36,7 @@ export default class KvDocument {
         "readonly"
     ]);
 
-    private constructor(document: vscode.TextDocument, tks: sourcelib.kv.TokenList) {
+    private constructor(document: vscode.TextDocument, tks: sourcelib.kv.KvTokenList) {
         this._document = document;
         this._tokens = tks;
     }
@@ -56,9 +56,9 @@ export default class KvDocument {
         const valuePieces: KvPiece[] = [];
         for (const token of tokens) {
             switch (token.type) {
-            case sourcelib.kv.TokenType.Key:
+            case sourcelib.kv.KvTokenType.Key:
                 keyPiece = this.getUnquotedToken(token); break;
-            case sourcelib.kv.TokenType.Value:
+            case sourcelib.kv.KvTokenType.Value:
                 valuePieces.push(this.getUnquotedToken(token)); break;
             }
         }
@@ -69,13 +69,13 @@ export default class KvDocument {
         return new KvPair(keyPiece, valuePieces);
     }
 
-    public getTokenRange(token: sourcelib.kv.Token): vscode.Range {
+    public getTokenRange(token: sourcelib.kv.KvToken): vscode.Range {
         const start = new vscode.Position(token.line, token.range.getStart());
         const end = new vscode.Position(token.line, token.range.getEnd());
         return new vscode.Range(start, end);
     }
 
-    private getUnquotedToken(token: sourcelib.kv.Token): KvPiece {
+    private getUnquotedToken(token: sourcelib.kv.KvToken): KvPiece {
         const range = this.getTokenRange(token);
         return KvTokensProviderBase.unquoteToken(token, range);
     }

@@ -33,7 +33,7 @@ export async function compileSomething(settings: CompileSettings): Promise<void>
         filePath = filePath.toLowerCase();
         workDir = workDir.toLowerCase();
     }
-    if( exePath == null || sourcelib.kv.isWhitespace(exePath) ) {
+    if( exePath == null || sourcelib.kv.KvStringUtil.isWhitespace(exePath) ) {
         vscode.window.showErrorMessage(`${settings.compilerName} path is empty. Please configure!`);
         return;
     }

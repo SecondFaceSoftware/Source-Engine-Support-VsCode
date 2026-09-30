@@ -67,7 +67,7 @@ export class ShaderParamCompletionItemProvider implements vscode.CompletionItemP
 
     }
 
-    completeDefault(completions: vscode.CompletionList, document: vscode.TextDocument, kv: KvPair, param: ShaderParam): void {
+    completeDefault(completions: vscode.CompletionList, document: vscode.TextDocument, kv: KvPair, param: sourcelib.vmt.ShaderParam): void {
         if (param.defaultCompletion == null)
             return;
         const completion = new vscode.CompletionItem(param.defaultCompletion.toString());
@@ -76,7 +76,7 @@ export class ShaderParamCompletionItemProvider implements vscode.CompletionItemP
         completions.items.push(completion);
     }
 
-    completeTexturePath(completions: vscode.CompletionList, document: vscode.TextDocument, kv: KvPair, param: ShaderParam): void {
+    completeTexturePath(completions: vscode.CompletionList, document: vscode.TextDocument, kv: KvPair, param: sourcelib.vmt.ShaderParam): void {
         if (param.type !== "texture" && document.uri.scheme !== "file")
             return;
 
